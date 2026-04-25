@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,5 +20,13 @@ public class Match {
     private String type;
     private LocalDate date;
     private LocalTime time;
+    private User createdBy;
+    private List<User> participants = new ArrayList<>();
+
+    public void addParticipant(User user) {
+        if (!participants.contains(user)) {
+            participants.add(user);
+        }
+    }
 
 }

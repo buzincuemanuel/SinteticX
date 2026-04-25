@@ -3,6 +3,7 @@ package com.buzincuemanuel.sinteticx.dto;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -21,11 +22,11 @@ public class MatchDTO {
     @NotBlank(message = "Match type is required")
     private String type;
 
-    @NotEmpty(message = "The date of the match is required")
+    @NotNull(message = "The date of the match is required")
     @FutureOrPresent(message = "The date of the match can't be in the past")
     private LocalDate date;
 
-    @NotEmpty(message = "The time of the match is required")
+    @NotNull(message = "The time of the match is required")
     private LocalTime time;
 
 
