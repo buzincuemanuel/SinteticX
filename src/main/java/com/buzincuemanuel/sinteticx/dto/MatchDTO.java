@@ -1,35 +1,27 @@
 package com.buzincuemanuel.sinteticx.dto;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class MatchDTO {
 
-    @NotBlank(message = "Location is required")
+    private Long id;
     private String location;
-
-    @NotBlank(message = "Match type is required")
     private String type;
-
-    @NotNull(message = "The date of the match is required")
-    @FutureOrPresent(message = "The date of the match can't be in the past")
     private LocalDate date;
-
-    @NotNull(message = "The time of the match is required")
     private LocalTime time;
-
-
-
-
+    private UserDTO createdBy;
+    private List<UserDTO> participants;
 }
