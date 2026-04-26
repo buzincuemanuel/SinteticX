@@ -2,11 +2,13 @@ package com.buzincuemanuel.sinteticx.service;
 
 
 import com.buzincuemanuel.sinteticx.dto.MatchDTO;
+import com.buzincuemanuel.sinteticx.mapper.MatchMapper;
 import com.buzincuemanuel.sinteticx.model.Match;
 import com.buzincuemanuel.sinteticx.repository.MatchRepository;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
@@ -15,21 +17,20 @@ import java.util.List;
 import static java.util.Collections.min;
 
 @Service
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@RequiredArgsConstructor
 public class MatchService {
 
-    private MatchRepository repository;
+    private final MatchRepository repository;
+    private final MatchMapper matchMapper;
 
-    public List<Match> getPaginatedMatches(int page, int size){
+    public List<MatchDTO> getPaginatedMatches(int page, int size){
 
         List<Match> matches = repository.findAll();
 
         int startIndex = page * size;
         int endIndex = Math.min(startIndex + size, matches.size());
 
-        return matches.subList(startIndex, endIndex);
+        return matchMapper.listToDTO(matches.subList(startIndex, endIndex));
     }
 
     public Match createMatch(MatchDTO matchDTO){
