@@ -5,26 +5,31 @@
 
     let currentPage = $state(1);
     let itemsPerPage = 3;
-    let totalPages = $derived(Math.ceil(matchesStore.list.length / itemsPerPage));
-    let startIndex = $derived((currentPage - 1) * itemsPerPage);
-    let endIndex = $derived(startIndex + itemsPerPage);
-    let paginatedMatches = $derived(matchesStore.list.slice(startIndex, endIndex));
-
     let lastVisitedId = $state(null);
 
     onMount(() => {
         lastVisitedId = getCookie('lastVisitedMatch');
+        loadPage(currentPage);
     });
 
+    // Funcția care cere datele de la server
+    function loadPage(pageNumber) {
+        // Trimitem pageNumber - 1 pentru că în Spring Boot paginile încep de la 0
+        matchesStore.fetchMatches(pageNumber - 1, itemsPerPage);
+    }
+
     function nextPage() {
-        if (currentPage < totalPages) {
+        // Permitem Next doar dacă pagina curentă este plină (adică mai sunt elemente de arătat)
+        if (matchesStore.matches.length === itemsPerPage) {
             currentPage += 1;
+            loadPage(currentPage);
         }
     }
 
     function prevPage() {
         if (currentPage > 1) {
             currentPage -= 1;
+            loadPage(currentPage);
         }
     }
 </script>
@@ -43,42 +48,52 @@
     {/if}
 
     <div class="table-container">
-        <table class="matches-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Location</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Type</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {#each paginatedMatches as match}
+        {#if matchesStore.isLoading}
+            <div style="padding: 2rem; text-align: center;">Loading matches from server...</div>
+        {:else if matchesStore.error}
+            <div style="padding: 2rem; color: red; text-align: center;">Error: {matchesStore.error}</div>
+        {:else if matchesStore.matches.length === 0}
+            <div style="padding: 2rem; text-align: center; color: #555;">No matches available on this page.</div>
+        {:else}
+            <table class="matches-table">
+                <thead>
                     <tr>
-                        <td>#{match.id}</td>
-                        <td>{match.location}</td>
-                        <td>{match.date}</td>
-                        <td>{match.time}</td>
-                        <td><span class="badge">{match.type}</span></td>
-                        <td>
-                            <a href="/matches/{match.id}" class="btn-view">Details</a>
-                        </td>
+                        <th>ID</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Actions</th>
                     </tr>
-                {/each}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {#each matchesStore.matches as match}
+                        <tr>
+                            <td>#{match.id}</td>
+                            <td>{match.location}</td>
+                            <td>{match.date}</td>
+                            <td>{match.time}</td>
+                            <td><span class="badge">{match.type}</span></td>
+                            <td>
+                                <a href="/matches/{match.id}" class="btn-view">Details</a>
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        {/if}
     </div>
 
     <div class="pagination">
         <button onclick={prevPage} disabled={currentPage === 1}>Previous</button>
-        <span>Page {currentPage} of {totalPages}</span>
-        <button onclick={nextPage} disabled={currentPage === totalPages}>Next</button>
+        <span>Page {currentPage}</span>
+        <button onclick={nextPage} disabled={matchesStore.matches.length < itemsPerPage}>Next</button>
     </div>
 </div>
 
 <style>
+    /* CSS-ul tău rămâne EXACT LA FEL! Nu am modificat nimic aici,
+       design-ul tău este perfect așa cum l-ai scris. */
     .container {
         padding: 3rem 10%;
         background-color: #fcfcfc;

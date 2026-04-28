@@ -2,8 +2,11 @@ package com.buzincuemanuel.sinteticx.repository;
 
 
 import com.buzincuemanuel.sinteticx.model.Match;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,5 +42,46 @@ public class MatchRepository {
 
     public boolean deleteById(Long id) {
         return matches.removeIf(m -> m.getId().equals(id));
+    }
+
+    @PostConstruct
+    public void initMockData() {
+        // Folosim .plusDays() ca să fim siguri că datele sunt mereu în viitor
+        // și nu pică eventualele validări de @FutureOrPresent
+
+        save(Match.builder()
+                .location("Baza Sportivă Unirea")
+                .type("Fotbal 5v5")
+                .date(LocalDate.now().plusDays(1))
+                .time(LocalTime.of(18, 0))
+                .build());
+
+        save(Match.builder()
+                .location("Sala Polivalentă")
+                .type("Baschet")
+                .date(LocalDate.now().plusDays(2))
+                .time(LocalTime.of(19, 30))
+                .build());
+
+        save(Match.builder()
+                .location("Teren Parcul Central")
+                .type("Tenis de câmp")
+                .date(LocalDate.now().plusDays(3))
+                .time(LocalTime.of(10, 0))
+                .build());
+
+        save(Match.builder()
+                .location("Baza Sportivă Gheorgheni")
+                .type("Fotbal 6v6")
+                .date(LocalDate.now().plusDays(1))
+                .time(LocalTime.of(20, 0))
+                .build());
+
+        save(Match.builder()
+                .location("Sala de Sport Universitară")
+                .type("Volei")
+                .date(LocalDate.now().plusDays(4))
+                .time(LocalTime.of(17, 15))
+                .build());
     }
 }
